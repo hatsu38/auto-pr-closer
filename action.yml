@@ -1,0 +1,39 @@
+name: Auto PR Closer
+description: 指定された日数アクティブでないプルリクエストを自動でクローズします
+inputs:
+  token:
+    description: 'GitHub Token'
+    required: true
+  days:
+    description: 'クローズするプルリクエストのアクティブでない日数'
+    required: true
+
+outputs:
+  pr_ids:
+    description: 'クローズするプルリクエストのID'
+    value: ${{ steps.get_prs.outputs.pr_ids }}
+
+runs:
+  using: "composite"
+  steps:
+    - name: "Checkout"
+      uses: actions/checkout@v4
+
+    - name: Get Target Pull Request Ids
+      id: get_prs
+      shell: bash
+      run: |
+        n_days_ago=$(date -d "-${{ inputs.days }} days" +%Y-%m-%d)
+        pr_ids=$(gh pr list --state open --search "updated:<$n_days_ago" --json number --jq '.[].number' | tr '\n' ' ')
+        echo "pr_ids: ${pr_ids}"
+        echo "pr_ids=${pr_ids}" >> $GITHUB_OUTPUT
+      env:
+        GITHUB_TOKEN: ${{ inputs.token }}
+
+    - name: Close Old Pull Requests
+      run: |
+        for pr_id in ${{ steps.get_pr_ids.outputs.pr_ids }}; do
+          gh pr close $pr_id --delete-branch --comment "このプルリクエストは古くなったため自動クローズしました。"
+        done
+      env:
+        GITHUB_TOKEN: ${{ inputs.token }}
