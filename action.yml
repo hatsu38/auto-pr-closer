@@ -37,3 +37,7 @@ runs:
         done
       env:
         GITHUB_TOKEN: ${{ inputs.token }}
+
+branding:
+  icon: git-pull-request
+  color: blue
