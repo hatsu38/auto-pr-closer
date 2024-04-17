@@ -39,7 +39,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Close Stale Pull Requests
-        uses: actions/auto-pr-closer@v1
+        uses: hatsu38/auto-pr-closer@v1
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           days: 30
