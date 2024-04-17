@@ -33,7 +33,7 @@ runs:
     - name: Close Old Pull Requests
       shell: bash
       run: |
-        for pr_id in ${{ steps.get_pr_ids.outputs.pr_ids }}; do
+        for pr_id in ${{ steps.get_prs.outputs.pr_ids }}; do
           gh pr close $pr_id --delete-branch --comment "このプルリクエストは古くなったため自動クローズしました。"
         done
       env:
